@@ -475,48 +475,74 @@ document.head.appendChild(style);
 function applySafariMobileFixes() {
     console.log('Applying Safari mobile fixes');
     
-    // GRUPO 1: Botones que SÍ funcionan (Mapas, Liverpool y ahora Asistencia)
-    const workingButtons = ['show-map', 'liverpool-link', 'rsvp-button'];
+    // GRUPO 1: Botones que SÍ funcionan (Mapas y Liverpool) - NO TOCAR
+    const workingButtons = ['show-map', 'liverpool-link'];
     
     workingButtons.forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
-            // Aplicar la configuración exitosa de Mapas y Liverpool a Asistencia
-            button.style.position = 'relative';
-            button.style.zIndex = '10'; // Mismo nivel que los que funcionan
-            button.style.pointerEvents = 'auto';
-            
-            // Si es el botón de asistencia, aplicar configuración especial del contenedor
-            if (buttonId === 'rsvp-button') {
-                const rsvpCard = button.closest('.rsvp-card');
-                if (rsvpCard) {
-                    rsvpCard.style.position = 'relative';
-                    rsvpCard.style.overflow = 'visible'; // Similar a .detail-card
-                }
-            }
-            
-            console.log(`${buttonId} using successful configuration`);
+            // NO modificar nada - ya funcionan perfectamente
+            console.log(`${buttonId} left untouched - working perfectly`);
         }
     });
     
-    // GRUPO 2: Solo Música necesita fix especial ahora
-    const problematicButtons = ['music-toggle'];
+    // GRUPO 2: Botones problemáticos - aplicar fix más agresivo
+    const problematicButtons = ['rsvp-button', 'music-toggle'];
     
     problematicButtons.forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
-            // Aplicar configuración especial solo para música
-            button.style.position = 'relative';
-            button.style.zIndex = '10'; // Mismo nivel que los que funcionan
+            // Fix más agresivo para forzar funcionamiento
+            button.style.position = 'absolute';
+            button.style.zIndex = '9999'; // Mucho más alto
             button.style.pointerEvents = 'auto';
+            button.style.isolation = 'isolate';
             
-            // Simplificar - quitar isolation que puede causar problemas
-            const container = button.parentElement;
-            if (container) {
-                container.style.position = 'relative';
-            }
+            // Forzar el botón encima de TODO
+            button.style.transform = 'translateZ(0)'; // Force hardware acceleration
             
-            console.log(`${buttonId} simplified fix for Safari`);
+            // Agregar event listeners adicionales específicos para Safari móvil
+            const originalClick = button.onclick;
+            
+            // Remover event listeners existentes y agregar uno nuevo
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            // Agregar event listener directo
+            newButton.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log(`Direct touch on ${buttonId}`);
+                
+                // Trigger click directly
+                setTimeout(() => {
+                    if (buttonId === 'music-toggle') {
+                        // Trigger music functionality directly
+                        const music = document.getElementById('background-music');
+                        if (music.paused) {
+                            music.play().catch(console.error);
+                        } else {
+                            music.pause();
+                        }
+                    } else if (buttonId === 'rsvp-button') {
+                        // Trigger RSVP functionality directly
+                        const message = encodeURIComponent(
+                            '¡Hola! Confirmo mi asistencia a la fiesta de Mario 🕷️\n\n' +
+                            '📅 Fecha: Domingo 14 de Septiembre 2025\n' +
+                            '🕒 Hora: 3:00 PM\n' +
+                            '📍 Lugar: Salón "El Mundo de Max"\n' +
+                            'Calle Federico Baena 215\n' +
+                            'San Marcos, 37410 León, Guanajuato\n\n' +
+                            '¡No puedo esperar a celebrar con Mario! 🎉'
+                        );
+                        const phoneNumber = '5214778144224';
+                        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+                        window.location.href = whatsappUrl;
+                    }
+                }, 10);
+            }, { passive: false });
+            
+            console.log(`${buttonId} aggressive fix applied with direct functionality`);
         }
     });
     
