@@ -475,13 +475,43 @@ document.head.appendChild(style);
 function applySafariMobileFixes() {
     console.log('Applying Safari mobile fixes');
     
+    // Fix for layer blocking issue - ensure buttons are on top
+    const criticalButtons = ['show-map', 'liverpool-link'];
+    
+    criticalButtons.forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) {
+            // Force button to be on top layer
+            button.style.position = 'relative';
+            button.style.zIndex = '999';
+            button.style.pointerEvents = 'auto';
+            
+            // Remove any blocking pseudo-elements from parent
+            const parent = button.closest('.detail-card');
+            if (parent) {
+                parent.style.position = 'relative';
+                // Temporarily disable shimmer effect that might block clicks
+                parent.style.overflow = 'visible';
+            }
+            
+            console.log(`${buttonId} enhanced for Safari with z-index fix`);
+        }
+    });
+    
     // Add additional touch handling for all interactive elements
     const interactiveElements = document.querySelectorAll('button, [onclick], .clickable');
     
     interactiveElements.forEach(element => {
-        // Ensure elements are focusable
+        // Ensure elements are focusable and clickable
         if (!element.tabIndex) {
             element.tabIndex = 0;
+        }
+        
+        // Force layer positioning
+        if (element.tagName === 'BUTTON') {
+            element.style.position = 'relative';
+            element.style.zIndex = '999';
+            element.style.pointerEvents = 'auto';
         }
         
         // Add touch-action for better touch handling
@@ -490,10 +520,12 @@ function applySafariMobileFixes() {
         // Add visual feedback for touch
         element.addEventListener('touchstart', function() {
             this.style.opacity = '0.8';
+            console.log(`Touch started on: ${this.id || this.className}`);
         }, { passive: true });
         
         element.addEventListener('touchend', function() {
             this.style.opacity = '1';
+            console.log(`Touch ended on: ${this.id || this.className}`);
         }, { passive: true });
     });
     
@@ -504,19 +536,12 @@ function applySafariMobileFixes() {
         }
     }, { passive: false });
     
-    // Add specific debugging for problematic buttons
-    const mapButton = document.getElementById('show-map');
-    const liverpoolButton = document.getElementById('liverpool-link');
-    
-    if (mapButton) {
-        console.log('Map button found and enhanced for Safari');
-        mapButton.style.webkitTouchCallout = 'none';
-        mapButton.style.webkitUserSelect = 'none';
-    }
-    
-    if (liverpoolButton) {
-        console.log('Liverpool button found and enhanced for Safari');
-        liverpoolButton.style.webkitTouchCallout = 'none';
-        liverpoolButton.style.webkitUserSelect = 'none';
-    }
+    // Add debugging for click events
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'BUTTON') {
+            console.log(`Button clicked in Safari: ${e.target.id || e.target.className}`);
+            console.log('Event target:', e.target);
+            console.log('Current target:', e.currentTarget);
+        }
+    }, true);
 }

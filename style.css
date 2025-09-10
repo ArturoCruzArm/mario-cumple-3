@@ -172,6 +172,8 @@ html {
     transform: rotate(45deg);
     transition: all 0.5s;
     opacity: 0;
+    pointer-events: none; /* Prevent blocking clicks */
+    z-index: 0;
 }
 
 .detail-card:hover::before {
@@ -231,6 +233,10 @@ html {
     appearance: none;
     -webkit-tap-highlight-color: rgba(255, 107, 53, 0.3);
     touch-action: manipulation; /* Prevent double-tap zoom */
+    /* Fix for Safari mobile layer issues */
+    position: relative;
+    z-index: 10; /* Ensure buttons are on top */
+    pointer-events: auto; /* Explicitly enable clicks */
 }
 
 .map-button:hover, .liverpool-button:hover, .rsvp-button:hover, .music-button:hover {
