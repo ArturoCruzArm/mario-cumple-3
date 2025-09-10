@@ -475,41 +475,48 @@ document.head.appendChild(style);
 function applySafariMobileFixes() {
     console.log('Applying Safari mobile fixes');
     
-    // GRUPO 1: Botones que SÍ funcionan (Mapas y Liverpool) - mantener como están
-    const workingButtons = ['show-map', 'liverpool-link'];
+    // GRUPO 1: Botones que SÍ funcionan (Mapas, Liverpool y ahora Asistencia)
+    const workingButtons = ['show-map', 'liverpool-link', 'rsvp-button'];
     
     workingButtons.forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
-            // Mantener configuración que ya funciona para estos botones
+            // Aplicar la configuración exitosa de Mapas y Liverpool a Asistencia
             button.style.position = 'relative';
-            button.style.zIndex = '10'; // Nivel normal
+            button.style.zIndex = '10'; // Mismo nivel que los que funcionan
             button.style.pointerEvents = 'auto';
             
-            console.log(`${buttonId} maintained working configuration`);
+            // Si es el botón de asistencia, aplicar configuración especial del contenedor
+            if (buttonId === 'rsvp-button') {
+                const rsvpCard = button.closest('.rsvp-card');
+                if (rsvpCard) {
+                    rsvpCard.style.position = 'relative';
+                    rsvpCard.style.overflow = 'visible'; // Similar a .detail-card
+                }
+            }
+            
+            console.log(`${buttonId} using successful configuration`);
         }
     });
     
-    // GRUPO 2: Botones problemáticos (Música y Asistencia) - aplicar fix especial
-    const problematicButtons = ['rsvp-button', 'music-toggle'];
+    // GRUPO 2: Solo Música necesita fix especial ahora
+    const problematicButtons = ['music-toggle'];
     
     problematicButtons.forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
-            // Aplicar configuración especial para estos botones
+            // Aplicar configuración especial solo para música
             button.style.position = 'relative';
-            button.style.zIndex = '100'; // Más alto para evitar bloqueos
+            button.style.zIndex = '10'; // Mismo nivel que los que funcionan
             button.style.pointerEvents = 'auto';
-            button.style.isolation = 'isolate'; // Crear nuevo stacking context
             
-            // Asegurar que el contenedor no bloquee
+            // Simplificar - quitar isolation que puede causar problemas
             const container = button.parentElement;
             if (container) {
                 container.style.position = 'relative';
-                container.style.zIndex = '99';
             }
             
-            console.log(`${buttonId} enhanced with special fix for Safari`);
+            console.log(`${buttonId} simplified fix for Safari`);
         }
     });
     
@@ -526,7 +533,7 @@ function applySafariMobileFixes() {
         if (element.tagName === 'BUTTON' && 
             !['show-map', 'liverpool-link', 'rsvp-button', 'music-toggle'].includes(element.id)) {
             element.style.position = 'relative';
-            element.style.zIndex = '50';
+            element.style.zIndex = '10'; // Mismo nivel para consistencia
             element.style.pointerEvents = 'auto';
         }
         
