@@ -138,8 +138,8 @@ function initializeMap() {
         
         if (!map) {
             // Calle Federico Baena 215, San Marcos, 37410 León, Guanajuato
-            const latitude = 21.1380; // Coordenadas aproximadas de Colonia San Marcos, León
-            const longitude = -101.7047;
+            const latitude = 21.114455; // Coordenadas aproximadas de Colonia San Marcos, León
+            const longitude = -101.711402;
 
             map = L.map('map').setView([latitude, longitude], 15);
 
