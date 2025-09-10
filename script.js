@@ -475,15 +475,15 @@ document.head.appendChild(style);
 function applySafariMobileFixes() {
     console.log('Applying Safari mobile fixes');
     
-    // Fix for layer blocking issue - ensure buttons are on top
-    const criticalButtons = ['show-map', 'liverpool-link'];
+    // Fix for layer blocking issue - ensure ALL buttons have same z-index
+    const allButtons = ['show-map', 'liverpool-link', 'rsvp-button', 'music-toggle'];
     
-    criticalButtons.forEach(buttonId => {
+    allButtons.forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
-            // Force button to be on top layer
+            // All buttons at same level - no blocking
             button.style.position = 'relative';
-            button.style.zIndex = '999';
+            button.style.zIndex = '50'; // Same level for all
             button.style.pointerEvents = 'auto';
             
             // Remove any blocking pseudo-elements from parent
@@ -494,7 +494,7 @@ function applySafariMobileFixes() {
                 parent.style.overflow = 'visible';
             }
             
-            console.log(`${buttonId} enhanced for Safari with z-index fix`);
+            console.log(`${buttonId} enhanced for Safari with equal z-index`);
         }
     });
     
@@ -507,10 +507,10 @@ function applySafariMobileFixes() {
             element.tabIndex = 0;
         }
         
-        // Force layer positioning
+        // Force layer positioning - same level for all buttons
         if (element.tagName === 'BUTTON') {
             element.style.position = 'relative';
-            element.style.zIndex = '999';
+            element.style.zIndex = '50'; // Same level, no blocking
             element.style.pointerEvents = 'auto';
         }
         

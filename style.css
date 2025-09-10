@@ -235,7 +235,7 @@ html {
     touch-action: manipulation; /* Prevent double-tap zoom */
     /* Fix for Safari mobile layer issues */
     position: relative;
-    z-index: 10; /* Ensure buttons are on top */
+    z-index: 50; /* Same level for all buttons */
     pointer-events: auto; /* Explicitly enable clicks */
 }
 
