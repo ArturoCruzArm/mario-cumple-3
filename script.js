@@ -1,5 +1,10 @@
 // Miles Morales Spider-Man Birthday Invitation JavaScript
 
+// Safari/iOS detection for better compatibility
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isMobileSafari = isSafari && isIOS;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize music
     initializeMusic();
@@ -15,6 +20,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add web-slinging animations
     addSpiderEffects();
+    
+    // Apply Safari-specific fixes
+    if (isMobileSafari) {
+        applySafariMobileFixes();
+    }
 });
 
 // Music functionality with Safari/iOS compatibility
@@ -113,10 +123,15 @@ function initializeMap() {
     const mapContainer = document.getElementById('map-container');
     let map = null;
 
-    showMapButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
+    const handleMapButtonClick = function(e) {
+        // Different event handling for mobile Safari
+        if (isMobileSafari) {
+            e.preventDefault();
+        } else {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        }
         
         console.log('Map button clicked');
         mapContainer.classList.remove('map-hidden');
@@ -164,49 +179,76 @@ function initializeMap() {
 
         // Smooth scroll to map
         mapContainer.scrollIntoView({ behavior: 'smooth' });
-    });
+    };
 
-    closeMapButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
+    // Add event listeners with Safari-specific handling
+    showMapButton.addEventListener('click', handleMapButtonClick);
+    if (isMobileSafari) {
+        showMapButton.addEventListener('touchstart', handleMapButtonClick, { passive: false });
+    }
+
+    const handleCloseMapClick = function(e) {
+        if (isMobileSafari) {
+            e.preventDefault();
+        } else {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        }
         
         console.log('Close map button clicked');
         mapContainer.classList.add('map-hidden');
-    });
+    };
+
+    closeMapButton.addEventListener('click', handleCloseMapClick);
+    if (isMobileSafari) {
+        closeMapButton.addEventListener('touchstart', handleCloseMapClick, { passive: false });
+    }
 }
 
 // Liverpool app integration with fallbacks
 function initializeLiverpoolIntegration() {
     const liverpoolButton = document.getElementById('liverpool-link');
     
-    liverpoolButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
+    const handleLiverpoolClick = function(e) {
+        // Different event handling for mobile Safari
+        if (isMobileSafari) {
+            e.preventDefault();
+        } else {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        }
         
         console.log('Liverpool button clicked');
         
         const liverpoolWebUrl = 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/51751987';
         
-        // Try different approaches for different browsers
-        try {
-            // Modern browsers
-            if (window.open) {
-                const newWindow = window.open(liverpoolWebUrl, '_blank', 'noopener,noreferrer');
-                
-                // Fallback if popup blocked
-                if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-                    // iOS Safari fallback
+        // Safari-specific handling
+        if (isMobileSafari) {
+            // Direct navigation for mobile Safari
+            setTimeout(() => {
+                window.location.href = liverpoolWebUrl;
+            }, 100);
+        } else {
+            // Try different approaches for other browsers
+            try {
+                // Modern browsers
+                if (window.open) {
+                    const newWindow = window.open(liverpoolWebUrl, '_blank', 'noopener,noreferrer');
+                    
+                    // Fallback if popup blocked
+                    if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                        window.location.href = liverpoolWebUrl;
+                    }
+                } else {
+                    // Very old browsers fallback
                     window.location.href = liverpoolWebUrl;
                 }
-            } else {
-                // Very old browsers fallback
+            } catch (error) {
+                // Ultimate fallback
                 window.location.href = liverpoolWebUrl;
             }
-        } catch (error) {
-            // Ultimate fallback
-            window.location.href = liverpoolWebUrl;
         }
 
         showNotification('Abriendo lista de regalos de Liverpool...', 'success');
@@ -218,7 +260,13 @@ function initializeLiverpoolIntegration() {
         setTimeout(() => {
             liverpoolButton.style.transform = 'scale(1)';
         }, 150);
-    });
+    };
+
+    // Add event listeners with Safari-specific handling
+    liverpoolButton.addEventListener('click', handleLiverpoolClick);
+    if (isMobileSafari) {
+        liverpoolButton.addEventListener('touchstart', handleLiverpoolClick, { passive: false });
+    }
 }
 
 // RSVP functionality
@@ -422,3 +470,53 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Safari Mobile specific fixes
+function applySafariMobileFixes() {
+    console.log('Applying Safari mobile fixes');
+    
+    // Add additional touch handling for all interactive elements
+    const interactiveElements = document.querySelectorAll('button, [onclick], .clickable');
+    
+    interactiveElements.forEach(element => {
+        // Ensure elements are focusable
+        if (!element.tabIndex) {
+            element.tabIndex = 0;
+        }
+        
+        // Add touch-action for better touch handling
+        element.style.touchAction = 'manipulation';
+        
+        // Add visual feedback for touch
+        element.addEventListener('touchstart', function() {
+            this.style.opacity = '0.8';
+        }, { passive: true });
+        
+        element.addEventListener('touchend', function() {
+            this.style.opacity = '1';
+        }, { passive: true });
+    });
+    
+    // Prevent double-tap zoom on buttons
+    document.addEventListener('touchend', function(e) {
+        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Add specific debugging for problematic buttons
+    const mapButton = document.getElementById('show-map');
+    const liverpoolButton = document.getElementById('liverpool-link');
+    
+    if (mapButton) {
+        console.log('Map button found and enhanced for Safari');
+        mapButton.style.webkitTouchCallout = 'none';
+        mapButton.style.webkitUserSelect = 'none';
+    }
+    
+    if (liverpoolButton) {
+        console.log('Liverpool button found and enhanced for Safari');
+        liverpoolButton.style.webkitTouchCallout = 'none';
+        liverpoolButton.style.webkitUserSelect = 'none';
+    }
+}
