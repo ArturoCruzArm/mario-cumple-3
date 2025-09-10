@@ -17,34 +17,63 @@ document.addEventListener('DOMContentLoaded', function() {
     addSpiderEffects();
 });
 
-// Music functionality
+// Music functionality with Safari/iOS compatibility
 function initializeMusic() {
     const music = document.getElementById('background-music');
     const musicButton = document.getElementById('music-toggle');
     let isPlaying = false;
 
-    musicButton.addEventListener('click', function() {
+    // Safari/iOS requires user interaction first
+    const enableAudio = () => {
+        if (music) {
+            music.load(); // Reload audio for iOS Safari
+        }
+    };
+
+    musicButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        
         if (isPlaying) {
             music.pause();
             musicButton.textContent = '🎵 Música';
             musicButton.style.background = 'linear-gradient(145deg, #FF6B35, #E5562E)';
         } else {
-            music.play().catch(e => {
-                console.log('Audio play failed:', e);
-                showNotification('Click para activar la música', 'info');
-            });
-            musicButton.textContent = '🔇 Pausar';
-            musicButton.style.background = 'linear-gradient(145deg, #FFD700, #FFC700)';
+            // iOS Safari audio play with Promise handling
+            const playPromise = music.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    musicButton.textContent = '🔇 Pausar';
+                    musicButton.style.background = 'linear-gradient(145deg, #FFD700, #FFC700)';
+                    isPlaying = true;
+                }).catch(error => {
+                    console.log('Audio play failed:', error);
+                    showNotification('Activa el audio manualmente', 'info');
+                    // Try to load the audio again for iOS
+                    music.load();
+                });
+            }
         }
-        isPlaying = !isPlaying;
+        
+        if (isPlaying && !music.paused) {
+            isPlaying = false;
+        } else if (!isPlaying && !music.paused) {
+            isPlaying = true;
+        }
     });
 
-    // Auto-play attempt (may be blocked by browser)
-    setTimeout(() => {
-        music.play().catch(e => {
-            console.log('Auto-play blocked');
-        });
-    }, 1000);
+    // Enable audio on first user interaction (iOS Safari requirement)
+    document.addEventListener('touchstart', enableAudio, { once: true });
+    document.addEventListener('click', enableAudio, { once: true });
+
+    // Don't auto-play on mobile devices
+    if (!(/Mobi|Android/i.test(navigator.userAgent))) {
+        setTimeout(() => {
+            music.play().catch(e => {
+                console.log('Auto-play blocked');
+            });
+        }, 1500);
+    }
 }
 
 // Map functionality
@@ -107,23 +136,41 @@ function initializeMap() {
     });
 }
 
-// Liverpool app integration
+// Liverpool app integration with fallbacks
 function initializeLiverpoolIntegration() {
     const liverpoolButton = document.getElementById('liverpool-link');
     
-    liverpoolButton.addEventListener('click', function() {
-        const sku = '51751987';
+    liverpoolButton.addEventListener('click', function(e) {
+        e.preventDefault();
         
-        // Direct link to Liverpool gift registry
-        const liverpoolWebUrl = `https://mesaderegalos.liverpool.com.mx/milistaderegalos/51751987`;
+        const liverpoolWebUrl = 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/51751987';
         
-        // Open Liverpool gift registry directly
-        window.open(liverpoolWebUrl, '_blank');
+        // Try different approaches for different browsers
+        try {
+            // Modern browsers
+            if (window.open) {
+                const newWindow = window.open(liverpoolWebUrl, '_blank', 'noopener,noreferrer');
+                
+                // Fallback if popup blocked
+                if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                    // iOS Safari fallback
+                    window.location.href = liverpoolWebUrl;
+                }
+            } else {
+                // Very old browsers fallback
+                window.location.href = liverpoolWebUrl;
+            }
+        } catch (error) {
+            // Ultimate fallback
+            window.location.href = liverpoolWebUrl;
+        }
 
         showNotification('Abriendo lista de regalos de Liverpool...', 'success');
         
-        // Add visual feedback
+        // Add visual feedback with better mobile support
         liverpoolButton.style.transform = 'scale(0.95)';
+        liverpoolButton.style.transition = 'transform 0.1s ease';
+        
         setTimeout(() => {
             liverpoolButton.style.transform = 'scale(1)';
         }, 150);

@@ -4,6 +4,26 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+/* iOS Safari fixes */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Allow text selection for content */
+p, h1, h2, h3 {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 body {
@@ -11,7 +31,18 @@ body {
     background: linear-gradient(135deg, #1a1a1a 0%, #8B0000 50%, #000000 100%);
     color: #ffffff;
     min-height: 100vh;
+    min-height: -webkit-fill-available; /* iOS Safari viewport fix */
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent zoom on input focus in iOS */
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* iOS Safari viewport units fix */
+html {
+    height: -webkit-fill-available;
 }
 
 /* Web Pattern Background */
@@ -179,19 +210,27 @@ body {
     font-weight: bold;
 }
 
-/* Buttons */
+/* Buttons - Mobile optimized */
 .map-button, .liverpool-button, .rsvp-button, .music-button, .close-map {
     background: linear-gradient(145deg, #FF6B35, #E5562E);
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 16px 28px; /* Increased for mobile touch */
     border-radius: 25px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     margin: 10px 5px;
-    font-size: 1rem;
+    font-size: 1.1rem; /* Slightly larger for mobile */
     box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+    min-height: 44px; /* iOS minimum touch target */
+    min-width: 44px;
+    /* Mobile button improvements */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: rgba(255, 107, 53, 0.3);
+    touch-action: manipulation; /* Prevent double-tap zoom */
 }
 
 .map-button:hover, .liverpool-button:hover, .rsvp-button:hover, .music-button:hover {
@@ -281,41 +320,120 @@ body {
     margin-top: 20px;
 }
 
-/* Responsive Design */
+/* Mobile-first responsive design */
 @media (max-width: 768px) {
     .invitation-container {
-        padding: 15px;
+        padding: 10px;
     }
     
     .main-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        line-height: 1.2;
+        margin-bottom: 15px;
     }
     
     .event-details {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 15px;
+        margin: 30px 0;
     }
     
     .detail-card {
-        padding: 20px;
+        padding: 20px 15px;
+        margin-bottom: 10px;
     }
     
     .hero-image {
-        max-width: 150px;
+        max-width: 180px;
         height: auto;
+    }
+    
+    .hero-section {
+        padding: 20px 0;
+    }
+    
+    /* Improve mobile buttons */
+    .map-button, .liverpool-button, .rsvp-button, .music-button, .close-map {
+        width: 100%;
+        max-width: 280px;
+        margin: 8px auto;
+        display: block;
+        padding: 18px 20px;
+        font-size: 1.1rem;
+    }
+    
+    .rsvp-button {
+        font-size: 1.3rem;
+        padding: 20px 25px;
     }
 }
 
 @media (max-width: 480px) {
+    .invitation-container {
+        padding: 8px;
+    }
+    
     .main-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        padding: 0 10px;
+    }
+    
+    .detail-card {
+        padding: 18px 12px;
     }
     
     .detail-card h2, .detail-card h3 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+    }
+    
+    .detail-card p {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+    
+    .hero-image {
+        max-width: 150px;
     }
     
     #map {
-        height: 300px;
+        height: 280px;
+        margin: 15px 0;
+    }
+    
+    .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Smaller mobile optimizations */
+    .map-button, .liverpool-button, .rsvp-button, .music-button, .close-map {
+        padding: 16px 20px;
+        font-size: 1rem;
+        margin: 6px auto;
+    }
+    
+    .rsvp-button {
+        font-size: 1.1rem;
+        padding: 18px 22px;
+    }
+}
+
+/* Extra small devices (very small phones) */
+@media (max-width: 360px) {
+    .main-title {
+        font-size: 1.6rem;
+    }
+    
+    .hero-image {
+        max-width: 120px;
+    }
+    
+    .detail-card {
+        padding: 15px 10px;
+    }
+    
+    .detail-card h2, .detail-card h3 {
+        font-size: 1.2rem;
     }
 }

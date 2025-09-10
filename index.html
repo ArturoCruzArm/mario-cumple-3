@@ -7,6 +7,18 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    
+    <!-- Progressive Enhancement and Browser Support -->
+    <meta name="theme-color" content="#FF6B35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mario cumple 3 años">
+    
+    <!-- Fallback for older browsers -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
     <audio id="background-music" loop>
@@ -88,7 +100,26 @@
         </footer>
     </div>
 
+    <!-- Load Leaflet with fallback -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Progressive enhancement check
+        if (!window.L) {
+            console.warn('Leaflet failed to load, map functionality disabled');
+            document.addEventListener('DOMContentLoaded', function() {
+                const mapButton = document.getElementById('show-map');
+                if (mapButton) {
+                    mapButton.style.display = 'none';
+                    const fallbackText = document.createElement('p');
+                    fallbackText.innerHTML = '📍 <strong>Ubicación:</strong> Calle Federico Baena 215, San Marcos, 37410 León, Guanajuato';
+                    fallbackText.style.color = '#FFD700';
+                    fallbackText.style.textAlign = 'center';
+                    fallbackText.style.margin = '10px 0';
+                    mapButton.parentNode.insertBefore(fallbackText, mapButton);
+                }
+            });
+        }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
