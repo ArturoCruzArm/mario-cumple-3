@@ -83,6 +83,10 @@ function initializeMusic() {
 
     musicButton.addEventListener('click', async function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        console.log('Music button clicked');
         
         if (isPlaying) {
             music.pause();
@@ -91,15 +95,15 @@ function initializeMusic() {
         }
     });
 
-    // Initialize audio on first user interaction
+    // Initialize audio on first music button interaction only
     let audioInitialized = false;
-    document.addEventListener('click', function enableAudio() {
+    musicButton.addEventListener('touchstart', function enableAudio() {
         if (!audioInitialized) {
             audioInitialized = true;
             music.volume = 0.7;
-            console.log('Audio initialized');
+            console.log('Audio initialized on music button touch');
         }
-    }, { once: true });
+    }, { once: true, passive: true });
 }
 
 // Map functionality
@@ -109,7 +113,12 @@ function initializeMap() {
     const mapContainer = document.getElementById('map-container');
     let map = null;
 
-    showMapButton.addEventListener('click', function() {
+    showMapButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        console.log('Map button clicked');
         mapContainer.classList.remove('map-hidden');
         
         if (!map) {
@@ -157,7 +166,12 @@ function initializeMap() {
         mapContainer.scrollIntoView({ behavior: 'smooth' });
     });
 
-    closeMapButton.addEventListener('click', function() {
+    closeMapButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        console.log('Close map button clicked');
         mapContainer.classList.add('map-hidden');
     });
 }
@@ -168,6 +182,10 @@ function initializeLiverpoolIntegration() {
     
     liverpoolButton.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        console.log('Liverpool button clicked');
         
         const liverpoolWebUrl = 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/51751987';
         
@@ -207,7 +225,12 @@ function initializeLiverpoolIntegration() {
 function initializeRSVP() {
     const rsvpButton = document.getElementById('rsvp-button');
     
-    rsvpButton.addEventListener('click', function() {
+    rsvpButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        console.log('RSVP button clicked');
         const message = encodeURIComponent(
             '¡Hola! Confirmo mi asistencia a la fiesta de Mario 🕷️\n\n' +
             '📅 Fecha: Domingo 14 de Septiembre 2025\n' +
