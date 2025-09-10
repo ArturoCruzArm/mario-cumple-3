@@ -486,63 +486,78 @@ function applySafariMobileFixes() {
         }
     });
     
-    // GRUPO 2: Botones problemáticos - aplicar fix más agresivo
+    // GRUPO 2: Botones problemáticos - aplicar protocolos Stack Overflow para móviles
     const problematicButtons = ['rsvp-button', 'music-toggle'];
     
     problematicButtons.forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
-            // Fix más agresivo para forzar funcionamiento
-            button.style.position = 'absolute';
-            button.style.zIndex = '9999'; // Mucho más alto
-            button.style.pointerEvents = 'auto';
-            button.style.isolation = 'isolate';
+            console.log(`Applying Stack Overflow mobile protocols to ${buttonId}`);
             
-            // Forzar el botón encima de TODO
-            button.style.transform = 'translateZ(0)'; // Force hardware acceleration
+            // Protocolo 1: Hacer el elemento "clickeable" para Safari iOS
+            button.style.cursor = 'pointer';
+            button.setAttribute('role', 'button');
+            button.setAttribute('tabindex', '0');
             
-            // Agregar event listeners adicionales específicos para Safari móvil
-            const originalClick = button.onclick;
+            // Protocolo 2: Agregar event listeners vacíos (Stack Overflow solution)
+            button.addEventListener('touchstart', () => {}, { passive: true });
+            button.addEventListener('touchend', () => {}, { passive: true });
+            button.addEventListener('touchcancel', () => {}, { passive: true });
+            button.addEventListener('touchmove', () => {}, { passive: true });
             
-            // Remover event listeners existentes y agregar uno nuevo
+            // Protocolo 3: Remover todos los event listeners existentes
             const newButton = button.cloneNode(true);
             button.parentNode.replaceChild(newButton, button);
             
-            // Agregar event listener directo
-            newButton.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log(`Direct touch on ${buttonId}`);
+            // Protocolo 4: Escuchar AMBOS touchend Y click (Stack Overflow recommendation)
+            let actionExecuted = false;
+            
+            const executeAction = () => {
+                if (actionExecuted) return; // Evitar doble ejecución
+                actionExecuted = true;
                 
-                // Trigger click directly
-                setTimeout(() => {
-                    if (buttonId === 'music-toggle') {
-                        // Trigger music functionality directly
-                        const music = document.getElementById('background-music');
-                        if (music.paused) {
-                            music.play().catch(console.error);
-                        } else {
-                            music.pause();
-                        }
-                    } else if (buttonId === 'rsvp-button') {
-                        // Trigger RSVP functionality directly
-                        const message = encodeURIComponent(
-                            '¡Hola! Confirmo mi asistencia a la fiesta de Mario 🕷️\n\n' +
-                            '📅 Fecha: Domingo 14 de Septiembre 2025\n' +
-                            '🕒 Hora: 3:00 PM\n' +
-                            '📍 Lugar: Salón "El Mundo de Max"\n' +
-                            'Calle Federico Baena 215\n' +
-                            'San Marcos, 37410 León, Guanajuato\n\n' +
-                            '¡No puedo esperar a celebrar con Mario! 🎉'
-                        );
-                        const phoneNumber = '5214778144224';
-                        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-                        window.location.href = whatsappUrl;
+                console.log(`Action executed for ${buttonId}`);
+                
+                if (buttonId === 'music-toggle') {
+                    const music = document.getElementById('background-music');
+                    if (music.paused) {
+                        music.play().catch(console.error);
+                    } else {
+                        music.pause();
                     }
-                }, 10);
+                } else if (buttonId === 'rsvp-button') {
+                    const message = encodeURIComponent(
+                        '¡Hola! Confirmo mi asistencia a la fiesta de Mario 🕷️\n\n' +
+                        '📅 Fecha: Domingo 14 de Septiembre 2025\n' +
+                        '🕒 Hora: 3:00 PM\n' +
+                        '📍 Lugar: Salón "El Mundo de Max"\n' +
+                        'Calle Federico Baena 215\n' +
+                        'San Marcos, 37410 León, Guanajuato\n\n' +
+                        '¡No puedo esperar a celebrar con Mario! 🎉'
+                    );
+                    const phoneNumber = '5214778144224';
+                    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+                    window.location.href = whatsappUrl;
+                }
+                
+                // Reset después de un tiempo
+                setTimeout(() => {
+                    actionExecuted = false;
+                }, 300);
+            };
+            
+            // Protocolo 5: Múltiples event listeners para máxima compatibilidad
+            newButton.addEventListener('touchend', (e) => {
+                e.preventDefault(); // Prevenir mouse events sintéticos
+                executeAction();
             }, { passive: false });
             
-            console.log(`${buttonId} aggressive fix applied with direct functionality`);
+            newButton.addEventListener('click', executeAction, { passive: false });
+            
+            // Protocolo 6: Fallback para mouseup (Stack Overflow solution)
+            newButton.addEventListener('mouseup', executeAction, { passive: false });
+            
+            console.log(`${buttonId} enhanced with Stack Overflow mobile protocols`);
         }
     });
     
