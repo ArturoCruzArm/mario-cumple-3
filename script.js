@@ -475,26 +475,41 @@ document.head.appendChild(style);
 function applySafariMobileFixes() {
     console.log('Applying Safari mobile fixes');
     
-    // Fix for layer blocking issue - ensure ALL buttons have same z-index
-    const allButtons = ['show-map', 'liverpool-link', 'rsvp-button', 'music-toggle'];
+    // GRUPO 1: Botones que SÍ funcionan (Mapas y Liverpool) - mantener como están
+    const workingButtons = ['show-map', 'liverpool-link'];
     
-    allButtons.forEach(buttonId => {
+    workingButtons.forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
-            // All buttons at same level - no blocking
+            // Mantener configuración que ya funciona para estos botones
             button.style.position = 'relative';
-            button.style.zIndex = '50'; // Same level for all
+            button.style.zIndex = '10'; // Nivel normal
             button.style.pointerEvents = 'auto';
             
-            // Remove any blocking pseudo-elements from parent
-            const parent = button.closest('.detail-card');
-            if (parent) {
-                parent.style.position = 'relative';
-                // Temporarily disable shimmer effect that might block clicks
-                parent.style.overflow = 'visible';
+            console.log(`${buttonId} maintained working configuration`);
+        }
+    });
+    
+    // GRUPO 2: Botones problemáticos (Música y Asistencia) - aplicar fix especial
+    const problematicButtons = ['rsvp-button', 'music-toggle'];
+    
+    problematicButtons.forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) {
+            // Aplicar configuración especial para estos botones
+            button.style.position = 'relative';
+            button.style.zIndex = '100'; // Más alto para evitar bloqueos
+            button.style.pointerEvents = 'auto';
+            button.style.isolation = 'isolate'; // Crear nuevo stacking context
+            
+            // Asegurar que el contenedor no bloquee
+            const container = button.parentElement;
+            if (container) {
+                container.style.position = 'relative';
+                container.style.zIndex = '99';
             }
             
-            console.log(`${buttonId} enhanced for Safari with equal z-index`);
+            console.log(`${buttonId} enhanced with special fix for Safari`);
         }
     });
     
@@ -507,10 +522,11 @@ function applySafariMobileFixes() {
             element.tabIndex = 0;
         }
         
-        // Force layer positioning - same level for all buttons
-        if (element.tagName === 'BUTTON') {
+        // Skip positioning if already handled by group-specific logic above
+        if (element.tagName === 'BUTTON' && 
+            !['show-map', 'liverpool-link', 'rsvp-button', 'music-toggle'].includes(element.id)) {
             element.style.position = 'relative';
-            element.style.zIndex = '50'; // Same level, no blocking
+            element.style.zIndex = '50';
             element.style.pointerEvents = 'auto';
         }
         
