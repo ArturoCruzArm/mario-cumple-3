@@ -1,0 +1,19 @@
+# GitHub Pages Configuration
+title: "Mario's 3rd Birthday - Spider-Verse Invitation"
+description: "Interactive web invitation for Mario's Spider-Man themed 3rd birthday party"
+theme: minima
+
+# Site settings
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+plugins:
+  - jekyll-feed
+
+# Exclude files
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

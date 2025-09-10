@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Mario cumple 3 años! - Invitación Spider-Verse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <audio id="background-music" loop>
+        <source src="spiderman-theme.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="invitation-container">
+        <div class="web-pattern"></div>
+        
+        <header class="hero-section">
+            <div class="spider-logo">
+                <img src="Generated Image September 09, 2025 - 11_16PM.png" alt="Mario Spider-Man" class="hero-image">
+            </div>
+            <h1 class="main-title">¡MARIO CUMPLE 3 AÑOS!</h1>
+            <div class="spider-web-decoration"></div>
+        </header>
+
+        <main class="invitation-content">
+            <section class="event-details">
+                <div class="detail-card spider-card">
+                    <div class="card-icon">🕷️</div>
+                    <h2>¡Únete a la celebración!</h2>
+                    <p class="theme-text">Temática: <strong>Miles Morales Spider-Man</strong></p>
+                </div>
+
+                <div class="detail-card date-card">
+                    <div class="card-icon">📅</div>
+                    <h3>Fecha y Hora</h3>
+                    <p><strong>Domingo 14 de Septiembre 2025</strong></p>
+                    <p>A partir de las <strong>3:00 PM</strong></p>
+                </div>
+
+                <div class="detail-card location-card">
+                    <div class="card-icon">📍</div>
+                    <h3>Ubicación</h3>
+                    <p><strong>Salón "El Mundo de Max"</strong></p>
+                    <p>Calle Federico Baena 215</p>
+                    <p>San Marcos, 37410</p>
+                    <p>León, Guanajuato</p>
+                    <button id="show-map" class="map-button">Ver Mapa 🗺️</button>
+                </div>
+
+                <div class="detail-card gift-card">
+                    <div class="card-icon">🎁</div>
+                    <h3>Lista de Regalos</h3>
+                    <p>Tienda de Regalos Liverpool</p>
+                    <p><strong>SKU: 51751987</strong></p>
+                    <button id="liverpool-link" class="liverpool-button">
+                        Abrir App Liverpool 🛍️
+                    </button>
+                </div>
+            </section>
+
+            <section class="interactive-section">
+                <div id="map-container" class="map-hidden">
+                    <h3>📍 Ubicación del Evento</h3>
+                    <div id="map"></div>
+                    <button id="close-map" class="close-map">Cerrar Mapa ✕</button>
+                </div>
+            </section>
+
+            <section class="rsvp-section">
+                <div class="rsvp-card">
+                    <h3>¡Confirma tu asistencia!</h3>
+                    <p>¡No te pierdas esta increíble aventura Spider-Verse!</p>
+                    <button id="rsvp-button" class="rsvp-button">
+                        Confirmar Asistencia 🕸️
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="invitation-footer">
+            <div class="spider-web-bottom"></div>
+            <p>¡Te esperamos para una celebración épica!</p>
+            <div class="music-controls">
+                <button id="music-toggle" class="music-button">🎵 Música</button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
