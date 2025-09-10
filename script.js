@@ -51,32 +51,43 @@ function initializeMusic() {
     music.addEventListener('play', () => updateButtonState(true));
     music.addEventListener('pause', () => updateButtonState(false));
 
+    let playAttempts = 0;
+    const maxPlayAttempts = 3;
+    
+    const tryPlayAudio = async () => {
+        try {
+            await music.play();
+            console.log('Music playing successfully');
+            playAttempts = 0; // Reset on success
+            return true;
+        } catch (error) {
+            console.error(`Playback attempt ${playAttempts + 1} failed:`, error);
+            
+            if (error.name === 'AbortError' && playAttempts < maxPlayAttempts) {
+                playAttempts++;
+                console.log(`Retrying audio playback (attempt ${playAttempts})`);
+                // Wait longer between retries
+                await new Promise(resolve => setTimeout(resolve, 200 * playAttempts));
+                return tryPlayAudio();
+            } else {
+                playAttempts = 0;
+                if (error.name === 'AbortError') {
+                    showNotification('Audio interrumpido. Intenta de nuevo.', 'info');
+                } else {
+                    showNotification('Haz clic para activar la música', 'info');
+                }
+                return false;
+            }
+        }
+    };
+
     musicButton.addEventListener('click', async function(e) {
         e.preventDefault();
         
-        try {
-            if (isPlaying) {
-                music.pause();
-            } else {
-                await music.play();
-                console.log('Music playing successfully');
-            }
-        } catch (error) {
-            console.error('Playback error:', error);
-            if (error.name === 'AbortError') {
-                // Audio was interrupted, try again after a brief delay
-                setTimeout(async () => {
-                    try {
-                        await music.play();
-                        console.log('Music resumed after interrupt');
-                    } catch (retryError) {
-                        console.error('Retry failed:', retryError);
-                        showNotification('Haz clic para activar la música', 'info');
-                    }
-                }, 100);
-            } else {
-                showNotification('Haz clic para activar la música', 'info');
-            }
+        if (isPlaying) {
+            music.pause();
+        } else {
+            await tryPlayAudio();
         }
     });
 
