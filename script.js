@@ -23,57 +23,72 @@ function initializeMusic() {
     const musicButton = document.getElementById('music-toggle');
     let isPlaying = false;
 
-    // Safari/iOS requires user interaction first
-    const enableAudio = () => {
-        if (music) {
-            music.load(); // Reload audio for iOS Safari
+    if (!music || !musicButton) {
+        console.error('Audio elements not found');
+        return;
+    }
+
+    // Update button state
+    const updateButtonState = (playing) => {
+        isPlaying = playing;
+        if (playing) {
+            musicButton.textContent = '🔇 Pausar';
+            musicButton.style.background = 'linear-gradient(145deg, #FFD700, #FFC700)';
+        } else {
+            musicButton.textContent = '🎵 Música';
+            musicButton.style.background = 'linear-gradient(145deg, #FF6B35, #E5562E)';
         }
     };
 
-    musicButton.addEventListener('click', function(e) {
+    // Handle audio events
+    music.addEventListener('loadstart', () => console.log('Audio loading started'));
+    music.addEventListener('canplay', () => console.log('Audio can play'));
+    music.addEventListener('error', (e) => {
+        console.error('Audio error:', e);
+        showNotification('Error al cargar la música', 'info');
+    });
+    
+    music.addEventListener('play', () => updateButtonState(true));
+    music.addEventListener('pause', () => updateButtonState(false));
+
+    musicButton.addEventListener('click', async function(e) {
         e.preventDefault();
         
-        if (isPlaying) {
-            music.pause();
-            musicButton.textContent = '🎵 Música';
-            musicButton.style.background = 'linear-gradient(145deg, #FF6B35, #E5562E)';
-        } else {
-            // iOS Safari audio play with Promise handling
-            const playPromise = music.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    musicButton.textContent = '🔇 Pausar';
-                    musicButton.style.background = 'linear-gradient(145deg, #FFD700, #FFC700)';
-                    isPlaying = true;
-                }).catch(error => {
-                    console.log('Audio play failed:', error);
-                    showNotification('Activa el audio manualmente', 'info');
-                    // Try to load the audio again for iOS
-                    music.load();
-                });
+        try {
+            if (isPlaying) {
+                music.pause();
+            } else {
+                await music.play();
+                console.log('Music playing successfully');
             }
-        }
-        
-        if (isPlaying && !music.paused) {
-            isPlaying = false;
-        } else if (!isPlaying && !music.paused) {
-            isPlaying = true;
+        } catch (error) {
+            console.error('Playback error:', error);
+            if (error.name === 'AbortError') {
+                // Audio was interrupted, try again after a brief delay
+                setTimeout(async () => {
+                    try {
+                        await music.play();
+                        console.log('Music resumed after interrupt');
+                    } catch (retryError) {
+                        console.error('Retry failed:', retryError);
+                        showNotification('Haz clic para activar la música', 'info');
+                    }
+                }, 100);
+            } else {
+                showNotification('Haz clic para activar la música', 'info');
+            }
         }
     });
 
-    // Enable audio on first user interaction (iOS Safari requirement)
-    document.addEventListener('touchstart', enableAudio, { once: true });
-    document.addEventListener('click', enableAudio, { once: true });
-
-    // Don't auto-play on mobile devices
-    if (!(/Mobi|Android/i.test(navigator.userAgent))) {
-        setTimeout(() => {
-            music.play().catch(e => {
-                console.log('Auto-play blocked');
-            });
-        }, 1500);
-    }
+    // Initialize audio on first user interaction
+    let audioInitialized = false;
+    document.addEventListener('click', function enableAudio() {
+        if (!audioInitialized) {
+            audioInitialized = true;
+            music.volume = 0.7;
+            console.log('Audio initialized');
+        }
+    }, { once: true });
 }
 
 // Map functionality

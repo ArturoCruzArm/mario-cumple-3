@@ -10,9 +10,11 @@
     
     <!-- Progressive Enhancement and Browser Support -->
     <meta name="theme-color" content="#FF6B35">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mario cumple 3 años">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕷️</text></svg>">
     
     <!-- Fallback for older browsers -->
     <!--[if lt IE 9]>
@@ -21,8 +23,9 @@
     <![endif]-->
 </head>
 <body>
-    <audio id="background-music" loop preload="metadata">
+    <audio id="background-music" loop preload="auto" crossorigin="anonymous">
         <source src="El Balance de Mario.mp3" type="audio/mpeg">
+        <source src="El%20Balance%20de%20Mario.mp3" type="audio/mpeg">
         <p>Tu navegador no soporta audio HTML5.</p>
     </audio>
 
